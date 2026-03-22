@@ -1,7 +1,7 @@
-Dieses playbook & rollen installiert die notwendigen pakete für einen kubernetes cluster auf debian 13 (trixie)
+Das Playbook install-kubernetes.yml
 
-
+Benutzt die Rollen in diesem Repository. Es installiert die notwendigen Pakete fÃ¼r einen Kubernetes Cluster auf Debian 13 (trixie)
 
 ```ansible-playbook install-kubernetes.yml -i hosts.yml```
 
-anschließend kann mit dem initialisieren des clusters begonnen werden.
+AnschlieÃŸend kann mit dem initialisieren des Clusters begonnen werden.
