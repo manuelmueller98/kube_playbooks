@@ -1,0 +1,2 @@
+aptPackages: [ 'tzdata', 'sudo', 'figlet', 'less', 'htop', 'vim', 'curl', 'git', 'python-is-python3', 'jq' ]
+preqPackages: [ 'apt-transport-https', 'ca-certificates', 'gnupg' ]

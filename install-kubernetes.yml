@@ -1,0 +1,19 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    #- name: install basic tools
+    #include_role:
+    #name: basic-tools
+  
+    #- name: install kubernetes and tools
+    #include_role:
+    #name: install-k8s
+
+    #- name: install docker
+    #include_role:
+    #name: install-docker
+
+  - name: install cri-dockerd
+    include_role:
+      name: install-cridockerd

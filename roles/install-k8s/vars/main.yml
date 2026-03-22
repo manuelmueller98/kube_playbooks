@@ -1,0 +1,4 @@
+# install-k8s.yml
+kubePackages: [ 'kubeadm', 'kubectl', 'kubelet']
+kernelModsToLoad: [ 'overlay', 'br_netfilter' ]
+kubeVersion: "v1.35"

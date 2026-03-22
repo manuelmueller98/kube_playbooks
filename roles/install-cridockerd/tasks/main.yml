@@ -1,0 +1,52 @@
+- name: Pull latest git changes from cri-dockerd (localhost)
+  git:
+    repo: 'https://github.com/Mirantis/cri-dockerd.git'
+    dest: "files/cri-docker"
+  delegate_to: localhost
+  run_once: true
+
+- name: Get latest cri-dockerd release (localhost)
+  shell: curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest | grep browser_download_url | grep .amd64.tgz | grep -v darwin | cut -d '"' -f 4
+  register: cridockerdOutput
+  delegate_to: localhost
+  run_once: true
+
+- name: Unpack cri-dockerd.tgz (localhost)
+  ansible.builtin.unarchive:
+    src: "{{ cridockerdOutput.stdout_lines[0] }}"
+    dest: "{{ role_path}}/files/tgz-cri-docker/"
+    remote_src: yes
+  delegate_to: localhost
+  run_once: true
+
+- name: Copy over cri-dockerd
+  copy:
+    src: tgz-cri-docker/cri-dockerd/cri-dockerd
+    dest: /usr/local/bin/cri-dockerd
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Copy over cri-docker.service
+  copy:
+    src: cri-docker/packaging/systemd/cri-docker.service
+    dest: /etc/systemd/system/cri-docker.service
+
+- name: Copy over cri-docker.socket
+  copy:
+    src: cri-docker/packaging/systemd/cri-docker.socket
+    dest: /etc/systemd/system/cri-docker.socket
+
+- name: Change executable in systemd-service file
+  replace:
+    path: /etc/systemd/system/cri-docker.service
+    regexp: '/usr/bin/cri-dockerd'
+    replace: '/usr/local/bin/cri-dockerd'
+
+- name: Reload systemd daemon
+  systemd_service:
+    enabled: true
+    state: started
+    name: cri-docker.service
+    daemon_reload: true
+

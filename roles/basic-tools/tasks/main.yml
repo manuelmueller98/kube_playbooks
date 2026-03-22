@@ -1,0 +1,52 @@
+- name: update apt cache
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: install basic tools
+  loop: "{{ aptPackages }}"
+  apt:
+    name: "{{ item }}"
+    state: present
+
+- name: preq packages
+  loop: "{{ preqPackages }}"
+  apt:
+    name: "{{ item }}"
+    state: present
+
+- name: set timezone
+  timezone:
+    name: Europe/Berlin
+
+- name: upgrade of all packages on the remote machine
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+  register: aptout
+
+- name: replace sshd config
+  copy:
+    src: /home/manu/ansible/files/conf/ssh/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+  register: sshd_config_file
+
+- name: sshd restart
+  service:
+    name: sshd
+    state: restarted
+  when: sshd_config_file.changed
+
+- name: reboot of the machine
+  reboot:
+    msg: "Reboot initiated by Ansible for kernel updates"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when: ansible_uptime_seconds > 432000

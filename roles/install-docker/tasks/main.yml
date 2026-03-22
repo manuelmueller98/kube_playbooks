@@ -1,0 +1,25 @@
+- name: purge non-repo installations
+  loop: "{{ nonRepoPackages }}"
+  apt:
+    purge: yes
+    state: absent
+    package: "{{ item }}"
+
+- name: get latest docker gpg-key
+  get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+- name: copy docker.sources to remote
+  copy:
+    src: files/docker.sources
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: 0644
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+
+- name: install docker packages
+  loop: "{{ dockerPackages }}"
+  apt:
+    name: "{{ item }}"
